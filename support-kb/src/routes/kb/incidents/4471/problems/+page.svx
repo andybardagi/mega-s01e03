@@ -4,7 +4,7 @@ title: '#4471 · split by problem'
 owner: support desk
 status: open
 reviewed: 2026-10-29
-signature: andybardagi
+signature: v1.eyJzdWIiOiIyMzc1IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyNDU4NzMsImV4cCI6MTc5MzMzMjI3M30.ljc7AUdUmVC3S3LtB7tPgF9JxnvKny4SgUL4YhBj_yI
 tickets:
   parser: https://github.com/andybardagi/mega-s01e03/issues/1
   hint: https://github.com/andybardagi/mega-s01e03/issues/2

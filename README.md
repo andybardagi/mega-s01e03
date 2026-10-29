@@ -13,7 +13,7 @@ One per problem, each with how many reports it covers:
 
 ## The page
 
-- Source: [`support-kb/src/routes/kb/incidents/4471/problems/+page.svx`](support-kb/src/routes/kb/incidents/4471/problems/+page.svx), signed `andybardagi`
+- Source: [`support-kb/src/routes/kb/incidents/4471/problems/+page.svx`](support-kb/src/routes/kb/incidents/4471/problems/+page.svx), signed with the course ticket (`signature:` in its frontmatter)
 - As the desk sees it: [`rendered/kb-incidents-4471-problems.png`](rendered/kb-incidents-4471-problems.png), and the built site in [`rendered/site/`](rendered/site/) (page: `kb/incidents/4471/problems.html`)
 
 Its counts are not typed: [`ProblemTable.svelte`](support-kb/src/lib/kb/ProblemTable.svelte) and
