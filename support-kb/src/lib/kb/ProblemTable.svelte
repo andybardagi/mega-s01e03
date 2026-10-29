@@ -44,9 +44,16 @@
   </tbody>
 </table>
 
+{#each groups as g (g.problem)}
+  {#each Object.entries(g.filedUnder).filter(([cause]) => cause !== g.problem) as [cause, n] (cause)}
+    <p class="note">{n} <code>{g.problem}</code> reports are also counted under <code>{cause}</code>, where the desk files them.</p>
+  {/each}
+{/each}
+
 <style>
   .sum { font-size: 1.1rem; }
   .small { color: var(--muted); font-size: 0.85em; }
+  .note { color: var(--muted); font-size: 0.85em; }
   .open td { background: var(--warn-bg); }
   .open td:last-child { color: var(--warn); font-weight: 600; }
 </style>

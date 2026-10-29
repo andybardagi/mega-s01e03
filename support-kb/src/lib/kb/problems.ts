@@ -1,19 +1,16 @@
 // What a merged ticket really holds: one problem per way a date goes wrong. causes.ts tells the
-// two swaps apart by tenant. A report the desk read as a one-day move (desk-notes.json) is neither
-// swap: the date did not flip, it moved, so it is a problem of its own and never counted twice.
+// two swaps apart by tenant, and the desk counts every report there, where it is filed. A report the
+// desk read as a one-day move (desk-notes.json) is neither swap: the date moved, it did not flip.
+// It stays counted where it is filed, and counts toward its own problem as well.
 import { causeOf, type Cause, type Report, type Tenant } from '#lib/kb/causes';
 
 export type Problem = Cause | 'one-day';
-export const PROBLEMS: readonly Problem[] = ['parser', 'hint', 'one-day'];
-
-export function problemOf(r: Report, t: Tenant | undefined, oneDayMove: readonly string[]): Problem | null {
-  if (oneDayMove.includes(r.id)) return 'one-day';
-  return causeOf(r, t);
-}
 
 export type ProblemGroup = {
   problem: Problem | 'unplaced';
   reports: Report[];
+  // Where the desk files these reports: cause → count. Differs from `problem` only for one-day.
+  filedUnder: Record<string, number>;
   // What intake tagged these reports as: tag → count.
   taggedAs: Record<string, number>;
   channels: Record<string, number>;
@@ -30,10 +27,12 @@ export function groupByProblem(
   tenantOf: (r: Report) => Tenant | undefined,
   oneDayMove: readonly string[],
 ): ProblemGroup[] {
+  const filed = (r: Report) => causeOf(r, tenantOf(r)) ?? 'unplaced';
   const byProblem = new Map<ProblemGroup['problem'], Report[]>();
+  const add = (p: ProblemGroup['problem'], r: Report) => byProblem.set(p, [...(byProblem.get(p) ?? []), r]);
   for (const r of reports) {
-    const problem = problemOf(r, tenantOf(r), oneDayMove) ?? 'unplaced';
-    byProblem.set(problem, [...(byProblem.get(problem) ?? []), r]);
+    add(filed(r), r);
+    if (oneDayMove.includes(r.id)) add('one-day', r);
   }
   return [...byProblem.entries()]
     .map(([problem, rs]) => {
@@ -41,6 +40,7 @@ export function groupByProblem(
       return {
         problem,
         reports: rs,
+        filedUnder: tally(rs, filed),
         taggedAs: tally(rs, (r) => r.meta.intakeTag),
         channels: tally(rs, (r) => r.channel),
         tenants: new Set(rs.map((r) => r.tenant)).size,

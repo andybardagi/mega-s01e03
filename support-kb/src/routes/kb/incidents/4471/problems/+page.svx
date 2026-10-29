@@ -17,9 +17,9 @@ tickets:
   import Callout from '#lib/kb/Callout.svelte';
 </script>
 
-[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Its reports hold more than
-one problem, and the queued fix reaches only the first one below. Each problem now has a ticket of
-its own.
+[#4471](/kb/incidents/4471) was merged as one issue with one fix. Its reports hold more than one
+problem, and that fix reaches only the first one below. Each problem has a ticket of its own, and
+its status lives there.
 
 <Callout kind="warn">
 Not one issue. Fixing the parser leaves the other problems in place.
@@ -30,7 +30,8 @@ Not one issue. Fixing the parser leaves the other problems in place.
 <ProblemTable ticket={4471} {tickets} />
 
 The table is built from the reports when the page renders, so it follows the queue while the desk
-keeps merging.
+keeps merging. It counts the way the desk's cause table does: every report under the cause it is
+filed under.
 
 ## The problems
 
@@ -38,21 +39,21 @@ keeps merging.
 
 Every tenant in #4471 writes the day first. The shared parser reads every date month first, so a
 date whose day is 12 or less comes out with day and month swapped: 2 December becomes 12 February.
-It reaches people through every channel. This is the fix #4471 has queued.
+It reaches people through every channel. This is the problem the fix for #4471 targets.
 
 ### `hint`: booking-v3 tells people to type the month first
 
 booking-v3 prints `MM/DD/YYYY` under its date field. People at day-first tenants type what the hint
 tells them, and the form reads the date the tenant's way, so day and month swap before the parser
-sees them. It comes only through the form of a booking-v3 tenant. A parser fix does not touch it:
-the hint has to change.
+sees them. It comes only through the form of a booking-v3 tenant. A parser fix does not touch it.
 
 ### `one-day`: the date moves by one day
 
 Some reports are no swap at all. A Tuesday shows as Monday, an invite arrives before its booking,
 two clients in different time zones get different days. The date moved; it did not flip. That
 points at time zones, not date order, and neither date-order fix reaches it. The desk lists these
-reports in `desk-notes.json`; the cause table on #4471 counts them under `parser` and footnotes them.
+reports in `desk-notes.json` and counts them under `parser`, where they are filed; the table shows
+them under both.
 
 ## Why they ended up in one ticket
 
@@ -64,7 +65,7 @@ reports in `desk-notes.json`; the cause table on #4471 counts them under `parser
 ## Keeping this page true
 
 - Counts come from `reports-4471.json` and `desk-notes.json` when the page renders. Don't type them here.
-- A report the desk reads as a one-day move goes into `oneDayMove` in `desk-notes.json`; the table moves it.
+- A report the desk reads as a one-day move goes into `oneDayMove` in `desk-notes.json`; the table counts it under `one-day` too.
 - A problem without a ticket shows as *no ticket yet*.
 - Status lives in the tickets. This page points to them and does not copy it.
 
