@@ -1,0 +1,71 @@
+---
+layout: runbook
+title: '#4471 · split by problem'
+owner: support desk
+status: open
+reviewed: 2026-10-29
+signature: andybardagi
+tickets:
+  parser: https://github.com/andybardagi/mega-s01e03/issues/1
+  hint: https://github.com/andybardagi/mega-s01e03/issues/2
+  one-day: https://github.com/andybardagi/mega-s01e03/issues/3
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Its reports hold more than
+one problem, and the queued fix reaches only the first one below. Each problem now has a ticket of
+its own.
+
+<Callout kind="warn">
+Not one issue. Fixing the parser leaves the other problems in place.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} {tickets} />
+
+The table is built from the reports when the page renders, so it follows the queue while the desk
+keeps merging.
+
+## The problems
+
+### `parser`: the shared parser reads dates month first
+
+Every tenant in #4471 writes the day first. The shared parser reads every date month first, so a
+date whose day is 12 or less comes out with day and month swapped: 2 December becomes 12 February.
+It reaches people through every channel. This is the fix #4471 has queued.
+
+### `hint`: booking-v3 tells people to type the month first
+
+booking-v3 prints `MM/DD/YYYY` under its date field. People at day-first tenants type what the hint
+tells them, and the form reads the date the tenant's way, so day and month swap before the parser
+sees them. It comes only through the form of a booking-v3 tenant. A parser fix does not touch it:
+the hint has to change.
+
+### `one-day`: the date moves by one day
+
+Some reports are no swap at all. A Tuesday shows as Monday, an invite arrives before its booking,
+two clients in different time zones get different days. The date moved; it did not flip. That
+points at time zones, not date order, and neither date-order fix reaches it. The desk lists these
+reports in `desk-notes.json`; the cause table on #4471 counts them under `parser` and footnotes them.
+
+## Why they ended up in one ticket
+
+- **Subject lines.** The desk merges on subject alone ([decision 0001](/kb/decisions/0001-dedupe-by-subject)).
+  Every one of these problems is reported as a wrong date, so they all matched.
+- **Intake tags.** Intake guesses `parser` or `hint` from the reporter's browser, but the problem
+  depends on the tenant and its form. The *tagged as* column shows how often the guess is wrong.
+
+## Keeping this page true
+
+- Counts come from `reports-4471.json` and `desk-notes.json` when the page renders. Don't type them here.
+- A report the desk reads as a one-day move goes into `oneDayMove` in `desk-notes.json`; the table moves it.
+- A problem without a ticket shows as *no ticket yet*.
+- Status lives in the tickets. This page points to them and does not copy it.
+
+<RenderStamp {signature} />
